@@ -1,84 +1,137 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8">
-  <title>The Last Wolf</title>
+<meta charset="utf-8">
+<title>The Last Wolf</title>
 
-  <!-- AR Libraries -->
-  <script src="https://cdn.8thwall.com/web/aframe/8frame-1.3.0.min.js"></script>
-  <script src="https://cdn.8thwall.com/web/xrextras/xrextras.js"></script>
-  <script src="https://unpkg.com/aframe-chromakey-material@1.1.4/dist/aframe-chromakey-material.min.js"></script>
+<script src="https://cdn.8thwall.com/web/aframe/8frame-1.3.0.min.js"></script>
+<script src="https://cdn.8thwall.com/web/xrextras/xrextras.js"></script>
+<script src="https://unpkg.com/aframe-chromakey-material@1.1.4/dist/aframe-chromakey-material.min.js"></script>
+<script async src="./engine/xr.js" data-preload-chunks="slam"></script>
 
-  <!-- 8th Wall Engine -->
-  <script async src="./engine/xr.js" data-preload-chunks="slam"></script>
+<style>
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#000;
+}
+#loadingScreen,#scanOverlay{
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  transition:opacity .4s ease;
+}
+#loadingScreen{background:#000;}
+#loadingScreen.hide,#scanOverlay.hide{
+  opacity:0;
+  pointer-events:none;
+}
+.loader{
+  width:42px;height:42px;
+  border:4px solid rgba(255,255,255,.2);
+  border-top:4px solid #fff;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
 
-  <!-- Image Target Configuration -->
-  <script>
-    const onxrloaded = () => {
-      XR8.XrController.configure({
-        imageTargetData:[{
-          "name": "wolf_target",
-          "type": "PLANAR",
-          "imagePath": "./assets/Targets/wolf_target.jpg",
-          "properties": {
-            "left": 0, "top": 0,
-            "width": 421, "height": 650,
-            "originalWidth": 421, "originalHeight": 650,
-            "isRotated": false
-          }
-        }]
-      });
-    };
-    window.XR8 ? onxrloaded() : window.addEventListener('xrloaded', onxrloaded);
-  </script>
+#scanOverlay{
+  background:rgba(0,0,0,.25);
+  z-index:9000;
+  display:none;
+}
+#scanOverlay img{
+  width:min(340px,80vw);
+  opacity:.95;
+}
+</style>
+
+<script>
+const onxrloaded=()=>{
+  XR8.XrController.configure({
+    imageTargetData:[{
+      name:"wolf_target",
+      type:"PLANAR",
+      imagePath:"./assets/Targets/wolf_target.jpg",
+      properties:{
+        left:0,top:0,width:421,height:650,
+        originalWidth:421,originalHeight:650,isRotated:false
+      }
+    }]
+  });
+};
+window.XR8?onxrloaded():window.addEventListener("xrloaded",onxrloaded);
+
+window.addEventListener("load",()=>{
+  const scene=document.querySelector("a-scene");
+  const loading=document.getElementById("loadingScreen");
+  const overlay=document.getElementById("scanOverlay");
+
+  scene.addEventListener("loaded",()=>{
+    loading.classList.add("hide");
+    setTimeout(()=>loading.style.display="none",450);
+
+    if(!sessionStorage.getItem("scanHintShown")){
+      overlay.style.display="flex";
+      requestAnimationFrame(()=>overlay.style.opacity="1");
+      sessionStorage.setItem("scanHintShown","true");
+    }
+  });
+
+  const target=document.querySelector("xrextras-named-image-target");
+  target.addEventListener("targetFound",()=>{
+    overlay.classList.add("hide");
+    setTimeout(()=>overlay.style.display="none",450);
+  });
+});
+</script>
 </head>
+
 <body>
-  <a-scene
-    xrextras-gesture-detector
-    xrextras-almost-there
-    xrextras-loading
-    xrextras-runtime-error
-    xrweb="disableWorldTracking: true">
 
-    <!-- Preload image asset -->
-    <a-assets>
-      
-      <video
-        id="mainVideo"
+<div id="loadingScreen">
+  <div class="loader"></div>
+</div>
 
-        src="./assets/Wolf.mp4"
+<div id="scanOverlay">
+  <img src="./assets/Targets/wolf_target.jpg" alt="Scan the back of the business card">
+</div>
 
-        preload="none"
+<a-scene
+  xrextras-gesture-detector
+  xrextras-almost-there
+  xrweb="disableWorldTracking: true">
 
-        playsinline
-        webkit-playsinline
+<a-assets>
+<video
+id="mainVideo"
+src="./assets/Wolf.mp4"
+preload="none"
+playsinline
+webkit-playsinline
+crossorigin="anonymous">
+</video>
+</a-assets>
 
-        crossorigin="anonymous"
->
-      </video>
+<a-camera position="0 4 10"></a-camera>
 
-    </a-assets>
+<xrextras-named-image-target name="wolf_target">
+<a-video
+id="main_video"
+src="#mainVideo"
+width="1"
+height="0.647"
+position="0 0 0"
+visible="false">
+</a-video>
+</xrextras-named-image-target>
 
-    <a-camera position="0 4 10"></a-camera>
+</a-scene>
 
-    <xrextras-named-image-target name="wolf_target">
-      
-      <a-video
-
-        id="main_video"
-
-        src="#mainVideo"
-
-        width="1"
-        height="0.647"
-
-        position="0 0 0"
-
-        visible="false">
-      </a-video>
-
-    </xrextras-named-image-target>
-
-  </a-scene>
 </body>
 </html>

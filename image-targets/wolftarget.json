@@ -1,0 +1,23 @@
+{
+  "type": "PLANAR",
+  "properties": {
+    "top": 68,
+    "left": 0,
+    "width": 650,
+    "height": 866,
+    "isRotated": true,
+    "originalWidth": 650,
+    "originalHeight": 1004
+  },
+  "imagePath": "image-targets/wolftarget_luminance.jpg",
+  "metadata": null,
+  "name": "wolftarget",
+  "resources": {
+    "originalImage": "wolftarget_original.jpg",
+    "croppedImage": "wolftarget_cropped.jpg",
+    "thumbnailImage": "wolftarget_thumbnail.jpg",
+    "luminanceImage": "wolftarget_luminance.jpg"
+  },
+  "created": 1783762557499,
+  "updated": 1783762576406
+}

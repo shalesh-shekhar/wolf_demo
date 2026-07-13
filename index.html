@@ -21,7 +21,7 @@
   <script crossorigin="anonymous" src="./external/runtime/runtime.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam"></script>
   <meta property="og:image" content="./assets/preview.jpg">
-  
+
   <style>
     html, body {
       margin: 0;
@@ -44,7 +44,7 @@
 
     #start-button {
       position: absolute;
-      bottom: 80px; /* Nudged up slightly to give the credit text breathing room */
+      bottom: 80px;
       background: none;
       border: none;
       padding: 0;
@@ -74,7 +74,7 @@
       position: fixed;
       top: 20px;
       right: 20px;
-      z-index: 100000; /* Higher than the splash overlay to stay visible */
+      z-index: 100000;
       transition: transform 0.2s ease;
     }
 
@@ -88,43 +88,41 @@
       height: 40px;
     }
 
-    /* Bottom Creator Credit Layout */
-   .creator-credit {
-  position: fixed;
-  left: 50%;
-  bottom: max(16px, env(safe-area-inset-bottom));
-  transform: translateX(-50%);
-  z-index: 100000;
+    /* Bottom Creator Credit Layout (Nested under Splash Screen) */
+    .creator-credit {
+      position: absolute;
+      left: 50%;
+      bottom: max(16px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
 
-  font-family: "Nunito", sans-serif;
-  font-size: 10px;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  line-height: 1;
+      font-family: "Nunito", sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      line-height: 1;
 
-  color: rgba(255, 255, 255, 0.55);
-  text-align: center;
-  white-space: nowrap;
+      color: rgba(255, 255, 255, 0.55);
+      text-align: center;
+      white-space: nowrap;
 
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+      pointer-events: auto;
+      user-select: none;
+    }
 
-  pointer-events: auto;
-  user-select: none;
-}
+    .creator-credit a {
+      color: rgba(255, 255, 255, 0.72);
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
 
-.creator-credit a {
-  color: rgba(255, 255, 255, 0.72);
-  text-decoration: none;
-  transition: opacity 0.2s ease;
-}
+    .creator-credit a:hover {
+      opacity: 1;
+    }
 
-.creator-credit a:hover {
-  opacity: 1;
-}
-
-.creator-credit a:not(:hover) {
-  opacity: 0.85;
-}
+    .creator-credit a:not(:hover) {
+      opacity: 0.85;
+    }
 
     #xr-canvas {
       position: fixed;
@@ -143,10 +141,9 @@
 
   <div id="start-overlay">
     <button id="start-button"><img src="./assets/StartAR.png" alt="Start AR"></button>
-  </div>
-
-  <div class="creator-credit">
-   <a href="https://shaleshshekhar.in" target="_blank" rel="noopener noreferrer"> WebAR created by Shalesh Shekhar </a>
+    <div class="creator-credit">
+      <a href="https://shaleshshekhar.in" target="_blank" rel="noopener noreferrer">WebAR by Shalesh Shekhar</a>
+    </div>
   </div>
 
   <canvas id="xr-canvas"></canvas>
@@ -159,7 +156,6 @@
         button.classList.add("active");
       };
 
-      // Enable the button as soon as 8th Wall finishes initializing
       if (window.XR8) {
         activateButton();
       } else {
@@ -169,13 +165,11 @@
       button.onclick = async () => {
         if (!button.classList.contains("active")) return;
 
-        // Unlock audio context so sounds can play natively on click
         try {
           const ctx = new (window.AudioContext || window.webkitAudioContext)();
           if (ctx.state === 'suspended') await ctx.resume();
-        } catch (e) {}
+        } catch (e) { }
 
-        // Hide and remove the visual overlay layer
         const overlay = document.getElementById("start-overlay");
         overlay.style.opacity = 0;
         setTimeout(() => overlay.remove(), 450);

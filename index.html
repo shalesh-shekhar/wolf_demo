@@ -4,16 +4,14 @@
 <head>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Boily Spud WebAR</title>
-  <meta itemprop="name" content="Boily Spud WebAR Book">
-  <meta name="twitter:title" content="Boily Spud WebAR Book">
-  <meta property="og:title" content="Boily Spud WebAR Book">
-  <meta property="og:site_name" content="Boily Spud WebAR Book">
+  <meta itemprop="name" content="Boily Spud WebAR">
+  <meta name="twitter:title" content="Boily Spud WebAR">
+  <meta property="og:title" content="Boily Spud WebAR">
+  <meta property="og:site_name" content="Boily Spud WebAR">
   <meta name="description" content="AR book cover with animated character">
   <meta itemprop="description" content="AR book cover with animated character">
-  <meta property="og:description"
-    content="AR book cover with animated character">
-  <meta name="twitter:description"
-    content="AR book cover with animated character">
+  <meta property="og:description" content="AR book cover with animated character">
+  <meta name="twitter:description" content="AR book cover with animated character">
   <link rel="icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
@@ -21,11 +19,9 @@
   <link rel="manifest" href="./assets/site.webmanifest">
   <meta name="theme-color" content="#D89A5B">
   <script crossorigin="anonymous" src="./external/runtime/runtime.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous"
-    data-preload-chunks="slam"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js"
-    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam"></script>
   <meta property="og:image" content="./assets/preview.png">
+  
   <style>
     html, body {
       margin: 0;
@@ -40,7 +36,7 @@
       position: fixed;
       inset: 0;
       z-index: 99999;
-      background: url('./assets/BoilySpudTarget.jpg') center center / cover no-repeat;
+      background: url('./assets/Splash.png') center center / cover no-repeat;
       display: flex;
       justify-content: center;
       transition: opacity 0.45s ease;
@@ -48,7 +44,7 @@
 
     #start-button {
       position: absolute;
-      bottom: 50px;
+      bottom: 80px; /* Nudged up slightly to give the credit text breathing room */
       background: none;
       border: none;
       padding: 0;
@@ -73,6 +69,46 @@
       transform: scale(0.95);
     }
 
+    /* Top Right Info Button Layout */
+    #info-link {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 100000; /* Higher than the splash overlay to stay visible */
+      transition: transform 0.2s ease;
+    }
+
+    #info-link:active {
+      transform: scale(0.9);
+    }
+
+    #info-link img {
+      display: block;
+      width: 40px;
+      height: 40px;
+    }
+
+    /* Bottom Creator Credit Layout */
+    .creator-credit {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100000; /* Persistent layer over overlay and camera stream */
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.65);
+      text-align: center;
+      white-space: nowrap;
+      pointer-events: auto;
+    }
+
+    .creator-credit a {
+      color: rgba(255, 255, 255, 0.85);
+      text-decoration: none;
+      margin-left: 4px;
+      font-weight: 500;
+    }
+
     #xr-canvas {
       position: fixed;
       inset: 0;
@@ -83,9 +119,19 @@
 
 <body>
   <script src="bundle.js"></script>
+
+  <a id="info-link" href="https://www.boilyspud.com" target="_blank" rel="noopener noreferrer">
+    <img src="assets/info.png" alt="Book Info">
+  </a>
+
   <div id="start-overlay">
     <button id="start-button"><img src="./assets/StartAR.png" alt="Start AR"></button>
   </div>
+
+  <div class="creator-credit">
+    WebAR created by Shalesh Shekhar <a href="https://shaleshshekhar.in" target="_blank" rel="noopener noreferrer">shaleshshekhar.in</a>
+  </div>
+
   <canvas id="xr-canvas"></canvas>
 
   <script>

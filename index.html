@@ -1,5 +1,33 @@
-<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>Boily Spud WebAR Book</title><meta itemprop="name" content="Boily Spud WebAR Book"><meta name="twitter:title" content="Boily Spud WebAR Book"><meta property="og:title" content="Boily Spud WebAR Book"><meta property="og:site_name" content="Boily Spud WebAR Book"><meta name="description" content="Bring your illustrations to life with immersive augmented reality experiences."><meta itemprop="description" content="Bring your illustrations to life with immersive augmented reality experiences."><meta property="og:description" content="Bring your illustrations to life with immersive augmented reality experiences."><meta name="twitter:description" content="Bring your illustrations to life with immersive augmented reality experiences."><link rel="icon" href="/favicon.ico"><link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png"><link rel="manifest" href="./assets/site.webmanifest"><meta name="theme-color" content="#D89A5B"><script crossorigin="anonymous" src="./external/runtime/runtime.js"></script><script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam"></script><script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js" crossorigin="anonymous"></script><meta property="og:image" content="./assets/preview.png"><style>html,
-    body {
+<!doctype html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Boily Spud WebAR</title>
+  <meta itemprop="name" content="Boily Spud WebAR Book">
+  <meta name="twitter:title" content="Boily Spud WebAR Book">
+  <meta property="og:title" content="Boily Spud WebAR Book">
+  <meta property="og:site_name" content="Boily Spud WebAR Book">
+  <meta name="description" content="AR book cover with animated character">
+  <meta itemprop="description" content="AR book cover with animated character">
+  <meta property="og:description"
+    content="AR book cover with animated character">
+  <meta name="twitter:description"
+    content="AR book cover with animated character">
+  <link rel="icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png">
+  <link rel="manifest" href="./assets/site.webmanifest">
+  <meta name="theme-color" content="#D89A5B">
+  <script crossorigin="anonymous" src="./external/runtime/runtime.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous"
+    data-preload-chunks="slam"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@8thwall/landing-page@1/dist/landing-page.js"
+    crossorigin="anonymous"></script>
+  <meta property="og:image" content="./assets/preview.png">
+  <style>
+    html, body {
       margin: 0;
       width: 100%;
       height: 100%;
@@ -8,18 +36,16 @@
       font-family: system-ui, -apple-system, sans-serif;
     }
 
-    /* ===== SIMPLIFIED BACKGROUND OVERLAY ===== */
     #start-overlay {
       position: fixed;
       inset: 0;
       z-index: 99999;
-      background: url('./Targets/BoilySpudTarget.jpg') center center / cover no-repeat;
+      background: url('./assets/BoilySpudTarget.jpg') center center / cover no-repeat;
       display: flex;
       justify-content: center;
       transition: opacity 0.45s ease;
     }
 
-    /* ===== BOTTOM IMAGE BUTTON ===== */
     #start-button {
       position: absolute;
       bottom: 50px;
@@ -28,7 +54,7 @@
       padding: 0;
       cursor: pointer;
       pointer-events: none;
-      opacity: 0.5; /* Dimmed state while loading */
+      opacity: 0.5;
       transition: transform 0.2s ease, opacity 0.4s ease;
     }
 
@@ -40,7 +66,7 @@
 
     #start-button.active {
       pointer-events: auto;
-      opacity: 1; /* Fully bright when ready */
+      opacity: 1;
     }
 
     #start-button:active {
@@ -51,211 +77,48 @@
       position: fixed;
       inset: 0;
       pointer-events: none;
-    }</style></head><body><script src="bundle.js"></script><div id="start-overlay"><button id="start-button"><img src="./assets/StartAR.png" alt="Start AR"></button></div><canvas id="xr-canvas"></canvas><script>window.addEventListener("load", () => {
+    }
+  </style>
+</head>
+
+<body>
+  <script src="bundle.js"></script>
+  <div id="start-overlay">
+    <button id="start-button"><img src="./assets/StartAR.png" alt="Start AR"></button>
+  </div>
+  <canvas id="xr-canvas"></canvas>
+
+  <script>
+    window.addEventListener("load", () => {
       const button = document.getElementById("start-button");
 
-      const videoAssets = [
-        './assets/arvideos/bear_video.mp4',
-        './assets/arvideos/crow_video.mp4',
-        './assets/arvideos/donkey_video.mp4',
-        './assets/arvideos/football_video.mp4',
-        './assets/arvideos/bookshop_video.mp4',
-        './assets/arvideos/sign_video.mp4',
-        './assets/arvideos/crows_video.mp4',
-        './assets/arvideos/television_video.mp4'
-      ];
-
-      let xrReady = false;
-      let assetsDownloaded = false;
-      let blobURLs = {};
-      let lastProgressTime = Date.now();
-      let watchdogInterval = null;
-
-      // Cache Configuration
-      const CACHE_NAME = 'ar-video-assets-v1';
-      const MAX_RETRIES = 5;
-      let retryCount = parseInt(sessionStorage.getItem("ar_retry_count") || "0", 10);
-      const currentTimeoutThreshold = 15000 + (retryCount * 5000);
-
-      const updateSystemStatus = (text, percent) => {
-        // Keeps background logic happy without visual progress elements
-        lastProgressTime = Date.now(); 
-      };
-
-      const startWatchdog = () => {
-        watchdogInterval = setInterval(() => {
-          if (assetsDownloaded) {
-            clearInterval(watchdogInterval);
-            return;
-          }
-          
-          if (Date.now() - lastProgressTime > currentTimeoutThreshold) {
-            clearInterval(watchdogInterval);
-            
-            if (retryCount >= MAX_RETRIES - 1) {
-              console.error("Connection speed insufficient.");
-              sessionStorage.removeItem("ar_retry_count");
-            } else {
-              sessionStorage.setItem("ar_retry_count", (retryCount + 1).toString());
-              setTimeout(() => { window.location.reload(); }, 10000);
-            }
-          }
-        }, 2000);
-      };
-
-      // --- SMART CACHE-ENABLED DOWNLOAD ENGINE ---
-      const downloadAllAssets = async () => {
-        let totalVideos = videoAssets.length;
-        let progressMap = new Array(totalVideos).fill(0);
-        
-        startWatchdog();
-
-        const videoCache = await caches.open(CACHE_NAME);
-
-        const loadOrDownloadVideo = async (url, index) => {
-          const cachedResponse = await videoCache.match(url);
-          
-          if (cachedResponse) {
-            const blob = await cachedResponse.blob();
-            blobURLs[url] = URL.createObjectURL(blob);
-            progressMap[index] = 1;
-            updateSystemStatus("Loading Cached Assets", 100);
-            return;
-          }
-
-          return new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open('GET', url, true);
-            xhr.responseType = 'blob';
-
-            xhr.onprogress = (event) => {
-              if (event.lengthComputable) {
-                progressMap[index] = event.loaded / event.total;
-                const totalProgress = (progressMap.reduce((a, b) => a + b, 0) / totalVideos) * 100;
-                updateSystemStatus("Downloading Experience Assets", totalProgress);
-              }
-            };
-
-            xhr.onload = async () => {
-              if (xhr.status === 200) {
-                const rawResponse = new Response(xhr.response);
-                await videoCache.put(url, rawResponse.clone());
-                blobURLs[url] = URL.createObjectURL(xhr.response);
-                resolve();
-              } else { reject(); }
-            };
-            xhr.onerror = () => reject();
-            xhr.send();
-          });
-        };
-
-        try {
-          await Promise.all(videoAssets.map((url, idx) => loadOrDownloadVideo(url, idx)));
-          assetsDownloaded = true;
-          clearInterval(watchdogInterval);
-          
-          sessionStorage.removeItem("ar_retry_count");
-          checkSystemReadiness();
-        } catch (e) {
-          if (retryCount >= MAX_RETRIES - 1) {
-            sessionStorage.removeItem("ar_retry_count");
-          } else {
-            sessionStorage.setItem("ar_retry_count", (retryCount + 1).toString());
-            setTimeout(() => window.location.reload(), 1500);
-          }
-        }
-      };
-
-      const checkSystemReadiness = () => {
-        if (!xrReady || !assetsDownloaded) return;
+      const activateButton = () => {
         button.classList.add("active");
       };
 
+      // Enable the button as soon as 8th Wall finishes initializing
       if (window.XR8) {
-        xrReady = true;
-        downloadAllAssets();
+        activateButton();
       } else {
-        window.addEventListener("xrloaded", () => {
-          xrReady = true;
-          downloadAllAssets();
-        });
+        window.addEventListener("xrloaded", activateButton);
       }
 
-      // --- BILLBOARD INTERACTION ENGINE ---
       button.onclick = async () => {
         if (!button.classList.contains("active")) return;
 
-        // Prime the global browser audio execution context
+        // Unlock audio context so sounds can play natively on click
         try {
           const ctx = new (window.AudioContext || window.webkitAudioContext)();
           if (ctx.state === 'suspended') await ctx.resume();
-        } catch(e){}
+        } catch (e) {}
 
-        window.blobURLs = blobURLs;
-
-        // Inject Blobs cleanly into the blueprint configuration layout
-        try {
-          const ecsConfig = window.ecs?.application?.config?.objects;
-          if (ecsConfig) {
-            Object.keys(ecsConfig).forEach(entityId => {
-              const ent = ecsConfig[entityId];
-              
-              if (ent.material?.textureSrc?.asset) {
-                const standardPath = './' + ent.material.textureSrc.asset;
-                if (blobURLs[standardPath]) {
-                  ent.material.textureSrc.asset = blobURLs[standardPath];
-                }
-              }
-
-              if (ent.instanceData?.children) {
-                Object.keys(ent.instanceData.children).forEach(childId => {
-                  const child = ent.instanceData.children[childId];
-                  if (child.material?.textureSrc?.asset) {
-                    const standardPath = './' + child.material.textureSrc.asset;
-                    if (blobURLs[standardPath]) {
-                      child.material.textureSrc.asset = blobURLs[standardPath];
-                    }
-                  }
-                });
-              }
-            });
-          }
-        } catch (ecsErr) {
-          console.error("ECS blob stream injection error:", ecsErr);
-        }
-
-        // Cleanly remove the overlay
+        // Hide and remove the visual overlay layer
         const overlay = document.getElementById("start-overlay");
         overlay.style.opacity = 0;
         setTimeout(() => overlay.remove(), 450);
-
-        // Safely spin up tracking updates
-        setTimeout(() => {
-          try {
-            if (window.XR8 && XR8.XrController) XR8.XrController.resume();
-            
-            setTimeout(() => {
-              try {
-                const app = window.ecs?.application;
-                if (app && app.world) {
-                  const videoComponents = app.world.getComponents(window.ecs.VideoControls);
-                  if (videoComponents) {
-                    Object.keys(videoComponents).forEach(eid => {
-                      window.ecs.VideoControls.mutate(app.world, eid, (componentInstance) => {
-                        if (componentInstance) {
-                          componentInstance.paused = true; 
-                          if (typeof componentInstance.stop === 'function') {
-                            componentInstance.stop(); 
-                          }
-                        }
-                      });
-                    });
-                  }
-                }
-              } catch (runtimeErr) {}
-            }, 50);
-
-          } catch(e){}
-        }, 250);
       };
-    });</script></body></html>
+    });
+  </script>
+</body>
+
+</html>

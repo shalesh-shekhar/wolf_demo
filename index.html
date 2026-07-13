@@ -89,25 +89,42 @@
     }
 
     /* Bottom Creator Credit Layout */
-    .creator-credit {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 100000; /* Persistent layer over overlay and camera stream */
-      font-size: 11px;
-      color: rgba(255, 255, 255, 0.65);
-      text-align: center;
-      white-space: nowrap;
-      pointer-events: auto;
-    }
+   .creator-credit {
+  position: fixed;
+  left: 50%;
+  bottom: max(16px, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  z-index: 100000;
 
-    .creator-credit a {
-      color: rgba(255, 255, 255, 0.85);
-      text-decoration: none;
-      margin-left: 4px;
-      font-weight: 500;
-    }
+  font-family: "Nunito", sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  line-height: 1;
+
+  color: rgba(255, 255, 255, 0.55);
+  text-align: center;
+  white-space: nowrap;
+
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+
+  pointer-events: auto;
+  user-select: none;
+}
+
+.creator-credit a {
+  color: rgba(255, 255, 255, 0.72);
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.creator-credit a:hover {
+  opacity: 1;
+}
+
+.creator-credit a:not(:hover) {
+  opacity: 0.85;
+}
 
     #xr-canvas {
       position: fixed;

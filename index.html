@@ -1,0 +1,109 @@
+<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>The Last Wolf WebAR</title><meta itemprop="name" content="The Last Wolf WebAR"><meta name="twitter:title" content="The Last Wolf WebAR"><meta property="og:title" content="The Last Wolf WebAR"><meta property="og:site_name" content="The Last Wolf WebAR"><meta name="description" content="WebAR Animation of the last Wolf"><meta itemprop="description" content="WebAR Animation of the last Wolf"><meta property="og:description" content="WebAR Animation of the last Wolf"><meta name="twitter:description" content="WebAR Animation of the last Wolf"><link rel="icon" href="/favicon.ico"><link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png"><link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png"><link rel="apple-touch-icon" sizes="180x180" href="./assets/apple-touch-icon.png"><link rel="manifest" href="./assets/site.webmanifest"><meta name="theme-color" content="#D89A5B"><script crossorigin="anonymous" src="./external/runtime/runtime.js"></script><script src="https://cdn.jsdelivr.net/npm/@8thwall/engine-binary@1/dist/xr.js" async crossorigin="anonymous" data-preload-chunks="slam"></script><meta property="og:image" content="./assets/preview.jpg"><style>html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #000;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+
+    #start-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      background: url('./assets/Splash.png') center center / cover no-repeat;
+      display: flex;
+      justify-content: center;
+      transition: opacity 0.45s ease;
+    }
+
+    #start-button {
+      position: absolute;
+      bottom: 80px; /* Shifted up slightly to allow room for the credit text below */
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      pointer-events: none;
+      opacity: 0.5;
+      transition: transform 0.2s ease, opacity 0.4s ease;
+    }
+
+    #start-button img {
+      display: block;
+      width: min(70vw, 280px);
+      height: auto;
+    }
+
+    #start-button.active {
+      pointer-events: auto;
+      opacity: 1;
+    }
+
+    #start-button:active {
+      transform: scale(0.95);
+    }
+
+    /* Bottom Creator Credit Layout */
+    .creator-credit {
+      position: absolute;
+      left: 50%;
+      bottom: max(16px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+
+      font-family: "Nunito", sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+      line-height: 1;
+
+      color: rgba(255, 255, 255, 0.55);
+      text-align: center;
+      white-space: nowrap;
+
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+      pointer-events: auto;
+      user-select: none;
+    }
+
+    .creator-credit a {
+      color: rgba(255, 255, 255, 0.72);
+      text-decoration: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .creator-credit a:hover {
+      opacity: 1;
+    }
+
+    .creator-credit a:not(:hover) {
+      opacity: 0.85;
+    }
+
+    #xr-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+    }</style></head><body><script src="bundle.js"></script><div id="start-overlay"><button id="start-button"><img src="./assets/StartAR.png" alt="Start AR"></button><div class="creator-credit"><a href="https://shaleshshekhar.in" target="_blank" rel="noopener noreferrer">WebAR by Shalesh Shekhar</a></div></div><canvas id="xr-canvas"></canvas><script>window.addEventListener("load", () => {
+      const button = document.getElementById("start-button");
+
+      const activateButton = () => {
+        button.classList.add("active");
+      };
+
+      // Enable the button as soon as 8th Wall finishes initializing
+      if (window.XR8) {
+        activateButton();
+      } else {
+        window.addEventListener("xrloaded", activateButton);
+      }
+
+      button.onclick = () => {
+        if (!button.classList.contains("active")) return;
+
+        // Hide and completely remove the visual overlay layer (hides image, button, and credit all at once)
+        const overlay = document.getElementById("start-overlay");
+        overlay.style.opacity = 0;
+        setTimeout(() => overlay.remove(), 450);
+      };
+    });</script></body></html>

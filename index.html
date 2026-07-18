@@ -3,15 +3,15 @@
 
 <head>
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Boily Spud WebAR</title>
-  <meta itemprop="name" content="Boily Spud WebAR">
-  <meta name="twitter:title" content="Boily Spud WebAR">
-  <meta property="og:title" content="Boily Spud WebAR">
-  <meta property="og:site_name" content="Boily Spud WebAR">
-  <meta name="description" content="AR book cover with animated character">
-  <meta itemprop="description" content="AR book cover with animated character">
-  <meta property="og:description" content="AR book cover with animated character">
-  <meta name="twitter:description" content="AR book cover with animated character">
+  <title>The Last Wolf WebAR</title>
+  <meta itemprop="name" content="The Last Wolf WebAR">
+  <meta name="twitter:title" content="The Last Wolf WebAR">
+  <meta property="og:title" content="The Last Wolf WebAR">
+  <meta property="og:site_name" content="The Last Wolf WebAR">
+  <meta name="description" content="WebAR Animation of the last Wolf">
+  <meta itemprop="description" content="WebAR Animation of the last Wolf">
+  <meta property="og:description" content="WebAR Animation of the last Wolf">
+  <meta name="twitter:description" content="WebAR Animation of the last Wolf">
   <link rel="icon" href="/favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="./assets/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="./assets/favicon-16x16.png">
@@ -69,59 +69,27 @@
       transform: scale(0.95);
     }
 
-    /* Top Right Info Button Layout */
-    #info-link {
+    /* Bottom Scanning Instructions Layout */
+    #instruction-toast {
       position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 100000;
-      transition: transform 0.2s ease;
-    }
-
-    #info-link:active {
-      transform: scale(0.9);
-    }
-
-    #info-link img {
-      display: block;
-      width: 40px;
-      height: 40px;
-    }
-
-    /* Bottom Creator Credit Layout (Nested under Splash Screen) */
-    .creator-credit {
-      position: absolute;
       left: 50%;
-      bottom: max(16px, env(safe-area-inset-bottom));
+      bottom: max(32px, env(safe-area-inset-bottom));
       transform: translateX(-50%);
-
-      font-family: "Nunito", sans-serif;
-      font-size: 10px;
+      z-index: 99998; /* Below splash overlay, above canvas feed */
+      
+      background: rgba(0, 0, 0, 0.75);
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-size: 14px;
       font-weight: 500;
-      letter-spacing: 0.5px;
-      line-height: 1;
-
-      color: rgba(255, 255, 255, 0.55);
       text-align: center;
       white-space: nowrap;
-
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
-      pointer-events: auto;
-      user-select: none;
-    }
-
-    .creator-credit a {
-      color: rgba(255, 255, 255, 0.72);
-      text-decoration: none;
-      transition: opacity 0.2s ease;
-    }
-
-    .creator-credit a:hover {
-      opacity: 1;
-    }
-
-    .creator-credit a:not(:hover) {
-      opacity: 0.85;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
     }
 
     #xr-canvas {
@@ -135,25 +103,23 @@
 <body>
   <script src="bundle.js"></script>
   
+  <!-- Background Audio Element (Preloaded and set to loop) -->
   <audio id="bg-audio" src="assets/audio.mp3" loop preload="auto"></audio>
 
-  <a id="info-link" href="https://boilyspud.com/shop-page/" target="_blank" rel="noopener noreferrer">
-    <img src="assets/info.png" alt="Book Info">
-  </a>
-  
   <div id="start-overlay">
     <button id="start-button"><img src="./assets/StartAR.png" alt="Start AR"></button>
-    <div class="creator-credit">
-      <a href="https://shaleshshekhar.in" target="_blank" rel="noopener noreferrer">WebAR by Shalesh Shekhar</a>
-    </div>
   </div>
+
+  <!-- Instruction text overlay at bottom side -->
+  <div id="instruction-toast">Scan back of card – free the wild!</div>
   
   <canvas id="xr-canvas"></canvas>
-  
+
   <script>
     window.addEventListener("load", () => {
       const button = document.getElementById("start-button");
       const audio = document.getElementById("bg-audio");
+      const toast = document.getElementById("instruction-toast");
 
       const activateButton = () => {
         button.classList.add("active");
@@ -183,9 +149,23 @@
           if (ctx.state === 'suspended') await ctx.resume();
         } catch (e) { }
 
+        // Hide and completely remove the visual overlay layer
         const overlay = document.getElementById("start-overlay");
         overlay.style.opacity = 0;
         setTimeout(() => overlay.remove(), 450);
+
+        // Show the scanning instruction overlay for 5 seconds
+        if (toast) {
+          setTimeout(() => {
+            toast.style.opacity = 1;
+            
+            // Fade out and remove from DOM after 5 seconds
+            setTimeout(() => {
+              toast.style.opacity = 0;
+              setTimeout(() => toast.remove(), 400);
+            }, 5000);
+          }, 300); // Small window timeout delay ensures clean entry transition post-overlay removal
+        }
       };
     });
   </script>

@@ -88,40 +88,27 @@
       height: 40px;
     }
 
-    /* Bottom Creator Credit Layout (Nested under Splash Screen) */
-    .creator-credit {
-      position: absolute;
+    /* Bottom Scanning Instructions Layout */
+    #instruction-toast {
+      position: fixed;
       left: 50%;
-      bottom: max(16px, env(safe-area-inset-bottom));
+      bottom: max(32px, env(safe-area-inset-bottom));
       transform: translateX(-50%);
-
-      font-family: "Nunito", sans-serif;
-      font-size: 10px;
+      z-index: 99998; /* Below splash overlay, above canvas feed */
+      
+      background: rgba(0, 0, 0, 0.75);
+      color: #ffffff;
+      padding: 12px 24px;
+      border-radius: 25px;
+      font-size: 14px;
       font-weight: 500;
-      letter-spacing: 0.5px;
-      line-height: 1;
-
-      color: rgba(255, 255, 255, 0.55);
       text-align: center;
       white-space: nowrap;
-
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
-      pointer-events: auto;
-      user-select: none;
-    }
-
-    .creator-credit a {
-      color: rgba(255, 255, 255, 0.72);
-      text-decoration: none;
-      transition: opacity 0.2s ease;
-    }
-
-    .creator-credit a:hover {
-      opacity: 1;
-    }
-
-    .creator-credit a:not(:hover) {
-      opacity: 0.85;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
     }
 
     #xr-canvas {
@@ -143,10 +130,10 @@
   
   <div id="start-overlay">
     <button id="start-button"><img src="./assets/StartAR.png" alt="Start AR"></button>
-    <div class="creator-credit">
-      <a href="https://shaleshshekhar.in" target="_blank" rel="noopener noreferrer">WebAR by Shalesh Shekhar</a>
-    </div>
   </div>
+
+  <!-- Instruction text overlay at bottom side -->
+  <div id="instruction-toast">Scan front cover for Boily to say hi!</div>
   
   <canvas id="xr-canvas"></canvas>
   
@@ -154,6 +141,7 @@
     window.addEventListener("load", () => {
       const button = document.getElementById("start-button");
       const audio = document.getElementById("bg-audio");
+      const toast = document.getElementById("instruction-toast");
 
       const activateButton = () => {
         button.classList.add("active");
@@ -183,9 +171,23 @@
           if (ctx.state === 'suspended') await ctx.resume();
         } catch (e) { }
 
+        // Hide and remove the splash screen overlay layer
         const overlay = document.getElementById("start-overlay");
         overlay.style.opacity = 0;
         setTimeout(() => overlay.remove(), 450);
+
+        // Show the scanning instruction overlay for 5 seconds
+        if (toast) {
+          setTimeout(() => {
+            toast.style.opacity = 1;
+            
+            // Fade out and remove from DOM after 5 seconds
+            setTimeout(() => {
+              toast.style.opacity = 0;
+              setTimeout(() => toast.remove(), 400);
+            }, 5000);
+          }, 300); // Slight delay so it appears smoothly after the splash screen fades out
+        }
       };
     });
   </script>
